@@ -11,6 +11,7 @@ INPUT_NODES_NUM = 3
 # up down left right
 OUTPUT_NODES_NUMBER = 4
 BIAS_VALUE = -0.5
+NORMALIZE = 100
 DIRECTIONS_TO_PLAY = {0: 'down',1: 'up',2: 'left',3: 'right'}
 
 
@@ -22,16 +23,16 @@ def calculate_direction(output):
     '''
     calculate the direction to got based on the max element in the array
     '''
-    max = -100
+    maxx = -100
     direction = -1
     for i in range(OUTPUT_NODES_NUMBER):
-        if max < output[i, 0]:
-            max = output[i, 0]
+        if maxx < output[i, 0]:
+            maxx = output[i, 0]
             direction = i
-    print("-----------------------")
-    print(output)
-    print("Move To make: " + DIRECTIONS_TO_PLAY[direction])
-    print("-----------------------")
+    #print("-----------------------")
+    #print(output)
+    #print("Move To make: " + DIRECTIONS_TO_PLAY[direction])
+    #print("-----------------------")
     return DIRECTIONS_TO_PLAY[direction]
 
 
@@ -99,6 +100,6 @@ class NeuralNetwork:
     #    self.input_neurons = np.array([position_x, position_y, distance]).reshape(1,INPUT_NODES_NUM) / 100
 
     def update_input_neurons(self, *inputs):
-        self.input_neurons = np.array(list(inputs)).reshape(1,INPUT_NODES_NUM)
+        self.input_neurons = np.array(list(inputs)).reshape(1,INPUT_NODES_NUM) / NORMALIZE
 
 

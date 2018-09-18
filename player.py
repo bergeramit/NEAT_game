@@ -28,6 +28,9 @@ class Player:
         if self.step == self.max_steps:
             self.is_dead = True
 
+        if self.is_dead:
+            return
+
         direction_to_go = self.nn.calculate_move()
         x, y = self.position
         if direction_to_go == 'left':

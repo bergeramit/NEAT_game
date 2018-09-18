@@ -1,4 +1,5 @@
 import pygame
+from population import Generation
 from game_settings import *
 from network import NeuralNetwork
 from player import Player
@@ -18,28 +19,22 @@ def test():
 
 def start():
     stop = False
-    first_man = Player()
     pygame.init()
+    pop = Generation()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(BACKGROUND_SIZE)
-    count = 0
 
     while not stop:
 
         screen.fill(BACKGROUND_COLOR)
-        pygame.draw.rect(screen, PLAYER_COLOR, [first_man.position[0], first_man.position[1], first_man.size[0], first_man.size[1]])
         pygame.draw.rect(screen, TARGET_COLOR, [TARGET_DOT[0], TARGET_DOT[1], TARGET_WIDTH, TARGET_HEIGHT])
+        pop.move()
+        pop.show(screen)
         pygame.display.update()
         clock.tick(60)
 
-        first_man.move()
         #print(str(first_man.nn))
-
-        count += 1
-        if count  % 5 == 0:
-            first_man.nn.add_node()
-
-        if first_man.is_dead:
+        if pop.is_extinct:
             stop = True
 
         for event in pygame.event.get():
