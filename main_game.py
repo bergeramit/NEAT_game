@@ -28,6 +28,7 @@ def start():
 
         screen.fill(BACKGROUND_COLOR)
         pygame.draw.rect(screen, PLAYER_COLOR, [first_man.position[0], first_man.position[1], first_man.size[0], first_man.size[1]])
+        pygame.draw.rect(screen, TARGET_COLOR, [TARGET_DOT[0], TARGET_DOT[1], TARGET_WIDTH, TARGET_HEIGHT])
         pygame.display.update()
         clock.tick(60)
 
@@ -38,7 +39,7 @@ def start():
         if count  % 5 == 0:
             first_man.nn.add_node()
 
-        if first_man.is_dead == True:
+        if first_man.is_dead:
             stop = True
 
         for event in pygame.event.get():

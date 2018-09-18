@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 '''
 Values {node_index: value}
@@ -42,7 +41,7 @@ class NeuralNetwork:
         self.input_neurons = np.ones((1, INPUT_NODES_NUM), dtype=np.float32)
         self.bias = BIAS_VALUE
         self.hidden_neurons = 0
-        self.weights_out = np.random.random((OUTPUT_NODES_NUMBER, INPUT_NODES_NUM))
+        self.weights_out = 2*np.random.random((OUTPUT_NODES_NUMBER, INPUT_NODES_NUM)) - 1
         self.output_neuron = np.zeros((OUTPUT_NODES_NUMBER, 1), dtype=np.float32)
         self.hidden_neurons_weights_in = None
         self.hidden_neurons_weights_out = None
@@ -71,14 +70,14 @@ class NeuralNetwork:
         adding new hidden node to the system
         '''
         if self.hidden_neurons == 0:
-            self.hidden_neurons_weights_in = np.random.random((1, INPUT_NODES_NUM))
-            self.hidden_neurons_weights_out = np.random.random((OUTPUT_NODES_NUMBER, 1))
+            self.hidden_neurons_weights_in = 2*np.random.random((1, INPUT_NODES_NUM)) - 1
+            self.hidden_neurons_weights_out = 2*np.random.random((OUTPUT_NODES_NUMBER, 1)) - 1
         else:
             # for the input hidden we need to add a row at the bottom
-            self.hidden_neurons_weights_in = np.vstack([self.hidden_neurons_weights_in, np.random.random((1, INPUT_NODES_NUM))])
+            self.hidden_neurons_weights_in = np.vstack([self.hidden_neurons_weights_in, 2*np.random.random((1, INPUT_NODES_NUM)) - 1])
 
             # for the output layer we need to add a column
-            new_matrix = np.random.random((OUTPUT_NODES_NUMBER, self.hidden_neurons + 1))
+            new_matrix = 2*np.random.random((OUTPUT_NODES_NUMBER, self.hidden_neurons + 1)) - 1
             new_matrix[:,:-1] = self.hidden_neurons_weights_out
             self.hidden_neurons_weights_out = new_matrix
 
@@ -96,7 +95,10 @@ class NeuralNetwork:
         return calculate_direction(self.output_neuron)
 
 
-    def update_input_neurons(self, position_x, position_y, distance):
-        self.input_neurons = np.array([position_x, position_y, distance]).reshape(1,INPUT_NODES_NUM) / 100
+    #def update_input_neurons(self, position_x, position_y, distance):
+    #    self.input_neurons = np.array([position_x, position_y, distance]).reshape(1,INPUT_NODES_NUM) / 100
+
+    def update_input_neurons(self, *inputs):
+        self.input_neurons = np.array(list(inputs)).reshape(1,INPUT_NODES_NUM)
 
 
