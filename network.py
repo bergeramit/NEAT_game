@@ -7,11 +7,11 @@ for 5 -> value += weights[edge] * values[edge[0]]
 '''
 
 # x, y distance from goal
-INPUT_NODES_NUM = 3
+INPUT_NODES_NUM = 4
 # up down left right
 OUTPUT_NODES_NUMBER = 4
 BIAS_VALUE = -0.5
-NORMALIZE = 100
+NORMALIZE = 1000
 DIRECTIONS_TO_PLAY = {0: 'down',1: 'up',2: 'left',3: 'right'}
 
 

@@ -35,7 +35,8 @@ def start():
 
         #print(str(first_man.nn))
         if pop.is_extinct:
-            stop = True
+            pop.generate_new_population()
+            print("Generation: {}".format(pop.generation_counter))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
