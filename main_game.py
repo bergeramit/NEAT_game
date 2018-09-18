@@ -1,6 +1,7 @@
 import pygame
 from game_settings import *
 from network import NeuralNetwork
+from player import Player
 
 
 def test():
@@ -13,17 +14,32 @@ def test():
     a.calculate_move()
 
 
+    #pygame.draw.rect(screen, terrain.color, [terrain.position.x, terrain.position.y, terrain.height, terrain.width])
+
 def start():
     stop = False
+    first_man = Player()
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(BACKGROUND_SIZE)
+    count = 0
 
     while not stop:
 
         screen.fill(BACKGROUND_COLOR)
+        pygame.draw.rect(screen, PLAYER_COLOR, [first_man.position[0], first_man.position[1], first_man.size[0], first_man.size[1]])
         pygame.display.update()
         clock.tick(60)
+
+        first_man.move()
+        #print(str(first_man.nn))
+
+        count += 1
+        if count  % 5 == 0:
+            first_man.nn.add_node()
+
+        if first_man.is_dead == True:
+            stop = True
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -33,5 +49,5 @@ def start():
     pygame.quit()
 
 if __name__ == "__main__":
-    test()
-    #start()
+    #test()
+    start()

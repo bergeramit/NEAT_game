@@ -15,6 +15,10 @@ BIAS_VALUE = -0.5
 DIRECTIONS_TO_PLAY = {0: 'down',1: 'up',2: 'left',3: 'right'}
 
 
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
 def calculate_direction(output):
     '''
     calculate the direction to got based on the max element in the array
@@ -26,6 +30,7 @@ def calculate_direction(output):
             max = output[i, 0]
             direction = i
     print("-----------------------")
+    print(output)
     print("Move To make: " + DIRECTIONS_TO_PLAY[direction])
     print("-----------------------")
     return DIRECTIONS_TO_PLAY[direction]
@@ -82,13 +87,16 @@ class NeuralNetwork:
 
     def calculate_move(self):
         if self.hidden_neurons_weights_in is None:
-            self.output_neuron = np.dot(self.weights_out, self.input_neurons.T) + BIAS_VALUE
+            self.output_neuron = sigmoid(np.dot(self.weights_out, self.input_neurons.T) + BIAS_VALUE)
         else:
             self.output_neuron = np.dot(self.hidden_neurons_weights_out, np.dot(self.hidden_neurons_weights_in, self.input_neurons.T))
             self.output_neuron += np.dot(self.weights_out, self.input_neurons.T)
+            self.output_neuron = sigmoid(self.output_neuron)
 
         return calculate_direction(self.output_neuron)
 
 
+    def update_input_neurons(self, position_x, position_y, distance):
+        self.input_neurons = np.array([position_x, position_y, distance]).reshape(1,INPUT_NODES_NUM) / 100
 
 
