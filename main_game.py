@@ -1,5 +1,5 @@
 import pygame
-from population import Generation
+from population import Generation, TARGET_DOT
 from game_settings import *
 from network import NeuralNetwork
 from player import Player
@@ -27,7 +27,7 @@ def start():
     while not stop:
 
         screen.fill(BACKGROUND_COLOR)
-        pygame.draw.rect(screen, TARGET_COLOR, [TARGET_DOT[0], TARGET_DOT[1], TARGET_WIDTH, TARGET_HEIGHT])
+        pygame.draw.rect(screen, TARGET_COLOR, [pop.target_dot[0], pop.target_dot[1], TARGET_WIDTH, TARGET_HEIGHT])
         pop.move()
         pop.show(screen)
         pygame.display.update()
