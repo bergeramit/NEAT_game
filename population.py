@@ -22,15 +22,17 @@ class Generation:
         for play in self.population:
             if not play.is_dead:
                 self.is_extinct = False
-            play.move()
-        # for not showing all of the population
-        self.calculate_fitness()
+                play.move()
 
 
     def show(self, screen):
+        c = 0
         for play in self.population:
+            if c > 2:
+                break
             if not play.is_dead:
                 pygame.draw.rect(screen, PLAYER_COLOR, [play.position[0], play.position[1], play.size[0], play.size[1]])
+                c += 1
 
 
     def calculate_fitness(self):
@@ -51,7 +53,7 @@ class Generation:
             play.step = 0
             play.fitness = 0
             play.is_arrived = False
-            play.position = np.array([PLAYER_START_X_POSITION, PLAYER_START_Y_POSITION], dtype=np.float32)
+            play.position = np.array([random.uniform(0, BACKGROUND_SIZE[0]), random.uniform(0, BACKGROUND_SIZE[1])], dtype=np.float32)
 
 
     def generate_new_population(self):
@@ -107,9 +109,9 @@ class Generation:
         for i in range(OUTPUT_NODES_NUMBER):
             for j in range(INPUT_NODES_NUM):
                 coin = random.uniform(0,1)
-                if coin < 0.1:
+                if coin < 0.05:
                     new_value = 0
-                elif coin > ((1 - 0.1) / 2) + 0.1:
+                elif coin > 0.6:
                     new_value = parent1.nn.weights_out[i, j]
                 else:
                     new_value = parent2.nn.weights_out[i, j]

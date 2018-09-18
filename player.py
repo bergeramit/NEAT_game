@@ -21,6 +21,7 @@ class Player:
         self.size = np.array([PLAYER_WIDTH, PLAYER_HEIGHT], dtype=np.float32)
         self.color = PLAYER_COLOR
         self.update_input_neurons()
+        self.previous_direction = ''
         self.is_arrived = False
         self.fitness = 0.0
 
@@ -32,7 +33,7 @@ class Player:
     def calculate_fitness(self):
         if calculate_distance_from_goal(self.position, TARGET_DOT) < 5:
             self.is_arrived = True
-            self.fitness = 1
+            self.fitness = 2
             return
         self.fitness = 1 / np.power(calculate_distance_from_goal(self.position, TARGET_DOT), 2)
 
@@ -45,7 +46,7 @@ class Player:
         if self.is_dead or self.is_arrived:
             return
 
-        direction_to_go = self.nn.calculate_move()
+        direction_to_go = self.nn.calculate_move(self.previous_direction)
         x, y = self.position
         if direction_to_go == 'left':
             x -= 5
@@ -55,6 +56,7 @@ class Player:
             y -= 5
         elif direction_to_go == 'down':
             y += 5
+
 
         if calculate_distance_from_goal(self.position, TARGET_DOT) < 5:
             self.is_arrived = True

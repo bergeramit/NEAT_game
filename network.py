@@ -19,14 +19,14 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def calculate_direction(output):
+def calculate_direction(output, prev_direction):
     '''
     calculate the direction to got based on the max element in the array
     '''
     maxx = -100
     direction = -1
     for i in range(OUTPUT_NODES_NUMBER):
-        if maxx < output[i, 0]:
+        if maxx < output[i, 0] and DIRECTIONS_TO_PLAY[i] != prev_direction:
             maxx = output[i, 0]
             direction = i
     #print("-----------------------")
@@ -85,7 +85,7 @@ class NeuralNetwork:
         self.hidden_neurons += 1
 
 
-    def calculate_move(self):
+    def calculate_move(self, prev_direction):
         if self.hidden_neurons_weights_in is None:
             self.output_neuron = sigmoid(np.dot(self.weights_out, self.input_neurons.T) + BIAS_VALUE)
         else:
@@ -93,7 +93,7 @@ class NeuralNetwork:
             self.output_neuron += np.dot(self.weights_out, self.input_neurons.T)
             self.output_neuron = sigmoid(self.output_neuron)
 
-        return calculate_direction(self.output_neuron)
+        return calculate_direction(self.output_neuron, prev_direction)
 
 
     #def update_input_neurons(self, position_x, position_y, distance):
