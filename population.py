@@ -29,7 +29,7 @@ class Generation:
     def show(self, screen):
         c = 0
         for play in self.population:
-            if c > 2:
+            if c > 4:
                 break
             if not play.is_dead:
                 pygame.draw.rect(screen, PLAYER_COLOR, [play.position[0], play.position[1], play.size[0], play.size[1]])
@@ -55,6 +55,7 @@ class Generation:
             play.fitness = 0
             play.is_arrived = False
             play.position = np.array([random.uniform(0, BACKGROUND_SIZE[0]), random.uniform(0, BACKGROUND_SIZE[1])], dtype=np.float32)
+            #play.position = np.array([300, 500], dtype=np.float32)
 
 
     def generate_new_population(self):
@@ -63,6 +64,7 @@ class Generation:
             print("00000000000000000000000000000000000000000000000000000000")
             print(str(self.population[0].nn))
             print("00000000000000000000000000000000000000000000000000000000")
+        #if self.generation_counter % 2 == 0:
             #self.target_dot = (random.uniform(0, BACKGROUND_SIZE[0]), random.uniform(0, BACKGROUND_SIZE[1]))
 
         self.generation_counter += 1
@@ -115,48 +117,53 @@ class Generation:
             son.nn.bias = parent2.nn.bias
 
         if random.uniform(0, 1) > 0.8:
-            son.nn.bias += 3*np.random.random(1)
-
+            son.nn.bias += 3*np.random.random(1) - 1.5
 
         # Pick Weights
         for i in range(OUTPUT_NODES_NUMBER):
             for j in range(INPUT_NODES_NUM):
                 coin = random.uniform(0,1)
-                if 0 < coin < 0.05:
+                if 0 < coin < 0.1:
                     new_value = 2*np.random.random(1) - 1
-                elif 0.05 < coin < 0.1:
+                elif 0.1 < coin < 0.2:
                     new_value = 0
-                elif coin > 0.5:
+                elif coin > 0.6:
                     new_value = parent1.nn.weights_out[i, j]
+                    if new_value == 0:
+                        if np.random.random(1) < 0.3:
+                            new_value = 2*np.random.random(1) - 1
                 else:
                     new_value = parent2.nn.weights_out[i, j]
+                    if new_value == 0:
+                        if np.random.random(1) < 0.3:
+                            new_value = 2*np.random.random(1) - 1
 
                 son.nn.weights_out[i, j] = new_value
 
         # In case of hidden neurons
         for i in range(parent1.nn.hidden_neurons):
-            if random.uniform(0, 1) > 0.8:
+            if random.uniform(0, 1) < 0.25:
                 son.nn.add_node()
                 son.nn.hidden_neurons_weights_in[son.nn.hidden_neurons - 1] = parent1.nn.hidden_neurons_weights_in[i]
-                son.nn.hidden_neurons_weights_out[:,-1] = parent1.nn.hidden_neurons_weights_out[:,i]
+                son.nn.hidden_neurons_weights_out[:, -1] = parent1.nn.hidden_neurons_weights_out[:, i]
 
         # In case of hidden neurons
         for i in range(parent2.nn.hidden_neurons):
-            if random.uniform(0, 1) > 0.8:
+            if random.uniform(0, 1) < 0.25:
                 son.nn.add_node()
                 son.nn.hidden_neurons_weights_in[son.nn.hidden_neurons - 1] = parent2.nn.hidden_neurons_weights_in[i]
-                son.nn.hidden_neurons_weights_out[:,-1] = parent2.nn.hidden_neurons_weights_out[:,i]
+                son.nn.hidden_neurons_weights_out[:, -1] = parent2.nn.hidden_neurons_weights_out[:, i]
+        son.nn.mutate_hidden_neurons()
 
         # Adding new neuron
-        if random.uniform(0,1) < MUTATE_RATE:
+        if random.uniform(0, 1) < MUTATE_RATE:
             son.nn.add_node()
-
         return son
 
 
     def mate(self):
         parents = self.generate_parents()
 
-        for first,second in parents:
+        for first, second in parents:
             self.population.append(self.mate_parents(first, second))
 

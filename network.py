@@ -7,33 +7,19 @@ for 5 -> value += weights[edge] * values[edge[0]]
 '''
 
 # x, y distance from goal
-INPUT_NODES_NUM = 4
+INPUT_NODES_NUM = 5
 # up down left right
 OUTPUT_NODES_NUMBER = 4
 BIAS_VALUE = -0.5
-NORMALIZE = 1000
-DIRECTIONS_TO_PLAY = {0: 'down',1: 'up',2: 'left',3: 'right'}
 
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    return np.tanh(x)
 
 
-def calculate_direction(output):
-    '''
-    calculate the direction to got based on the max element in the array
-    '''
-    maxx = -100
-    direction = -1
-    for i in range(OUTPUT_NODES_NUMBER):
-        if maxx < output[i, 0]:
-            maxx = output[i, 0]
-            direction = i
-    #print("-----------------------")
-    #print(output)
-    #print("Move To make: " + DIRECTIONS_TO_PLAY[direction])
-    #print("-----------------------")
-    return DIRECTIONS_TO_PLAY[direction]
+def softmax(output):
+    e_x = np.exp(output)
+    return e_x / e_x.sum()
 
 
 class NeuralNetwork:
@@ -79,27 +65,52 @@ class NeuralNetwork:
 
             # for the output layer we need to add a column
             new_matrix = 2*np.random.random((OUTPUT_NODES_NUMBER, self.hidden_neurons + 1)) - 1
-            new_matrix[:,:-1] = self.hidden_neurons_weights_out
+            new_matrix[:, :-1] = self.hidden_neurons_weights_out
             self.hidden_neurons_weights_out = new_matrix
+
+        for i in range(INPUT_NODES_NUM):
+            if np.random.random(1) < 0.5:
+                self.hidden_neurons_weights_in[self.hidden_neurons, i] = 0
+
+        for i in range(OUTPUT_NODES_NUMBER):
+            if np.random.random(1) < 0.5:
+                self.hidden_neurons_weights_out[i, self.hidden_neurons] = 0
 
         self.hidden_neurons += 1
 
 
     def calculate_move(self):
         if self.hidden_neurons_weights_in is None:
-            self.output_neuron = sigmoid(np.dot(self.weights_out, self.input_neurons.T) + BIAS_VALUE)
+            self.output_neuron = softmax(sigmoid(np.dot(self.weights_out, self.input_neurons.T) + BIAS_VALUE))
         else:
-            self.output_neuron = np.dot(self.hidden_neurons_weights_out, np.dot(self.hidden_neurons_weights_in, self.input_neurons.T))
+            self.output_neuron = sigmoid(np.dot(self.hidden_neurons_weights_out, np.dot(self.hidden_neurons_weights_in, self.input_neurons.T)))
             self.output_neuron += np.dot(self.weights_out, self.input_neurons.T)
-            self.output_neuron = sigmoid(self.output_neuron)
+            self.output_neuron = softmax(sigmoid(self.output_neuron))
 
-        return calculate_direction(self.output_neuron)
+        return self.output_neuron
 
-
-    #def update_input_neurons(self, position_x, position_y, distance):
-    #    self.input_neurons = np.array([position_x, position_y, distance]).reshape(1,INPUT_NODES_NUM) / 100
 
     def update_input_neurons(self, *inputs):
-        self.input_neurons = np.array(list(inputs)).reshape(1,INPUT_NODES_NUM) / NORMALIZE
+        self.input_neurons = np.array(list(inputs)).reshape(1,INPUT_NODES_NUM)
+
+
+    def mutate_hidden_neurons(self):
+        if self.hidden_neurons == 0:
+            return
+        for i in range(INPUT_NODES_NUM):
+            if np.random.random(1) < 0.4:
+                self.hidden_neurons_weights_in[self.hidden_neurons - 1, i] = 0
+            else:
+                if self.hidden_neurons_weights_in[self.hidden_neurons - 1, i] == 0 and np.random.random(1) < 0.2:
+                    self.hidden_neurons_weights_in[self.hidden_neurons - 1, i] = 2*np.random.random(1) - 1
+
+
+        for i in range(OUTPUT_NODES_NUMBER):
+            if np.random.random(1) < 0.4:
+                self.hidden_neurons_weights_out[i, self.hidden_neurons - 1] = 0
+            else:
+                if self.hidden_neurons_weights_out[i, self.hidden_neurons - 1] == 0 and np.random.random(1) < 0.2:
+                    self.hidden_neurons_weights_out[i, self.hidden_neurons - 1] = 2*np.random.random(1) - 1
+
 
 

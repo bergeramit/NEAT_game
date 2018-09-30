@@ -1,5 +1,5 @@
 import pygame
-from population import Generation, TARGET_DOT
+from population import Generation
 from game_settings import *
 from network import NeuralNetwork
 from player import Player
